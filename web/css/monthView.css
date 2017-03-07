@@ -1,0 +1,49 @@
+.month-view {
+	width: 100%;
+	border-collapse: collapse;
+	border-spacing: 15px;
+}
+
+.dow {
+	text-align: center;
+	color: #ffffff;
+	background-color: #333366;
+	width: 14%;
+	padding: 1px;
+	border: 1px solid #ffffff;
+}
+
+.day {
+	text-align: right;
+}
+.cell-day, .cell-blank {
+	width: 14%;
+	padding: 1px;
+	border: 1px solid #ffffff;
+	height: 90px;
+}
+
+.cell-day {
+	background-color: #a7cef9;
+	vertical-align: top;
+}
+
+.cell-blank {
+	background-color: #d6e8fc;
+
+}
+
+.cell-table {
+	width: 100%;
+}
+
+.events-list {
+	list-style: none;
+	padding-left: 0;
+}
+
+.event-item {
+	max-width: 90%;
+	font-size: 12px;
+	text-align: left;
+}

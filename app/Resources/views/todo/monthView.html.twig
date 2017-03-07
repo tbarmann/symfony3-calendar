@@ -1,0 +1,49 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+
+<h2 class="page-header">{{monthName}} {{year}}</h2>
+
+	<table class="month-view">
+    <tr>
+    {% for dow in daysOfWeek %}
+      <th class="dow">{{dow}}</th>
+    {% endfor %}
+    </tr>
+    {% for week in calendar %}
+      <tr>
+        {% for day in week %}
+          {% if day != null %}
+            <td class="cell-day" id="day_{{day}}">
+              <table class="cell-table" align="right">
+                <tr>
+                  <td class="day">{{day}}</td>
+                </tr>
+                <tr>
+                  <td class="events-container">
+                  {% if events[day] is defined %}
+                    <ul class="events-list">
+                      {% for event in events[day] %}
+                        <li class="event-item" title="{{event.time}} {{event.name}}">
+                          <a href="/details/{{event.id}}">{{event.time}} {{event.name}}</a>
+                        </li>
+                      {% endfor %}
+                    </ul>
+                  {% endif %}
+                  </td>
+                </tr>
+              </table>
+            </td>
+
+          {% else %}
+            <td class="cell-blank"></td>
+          {% endif %}
+
+        {% endfor %}
+      </tr>
+    {% endfor %}
+  </table>
+
+
+{% endblock %}
+
+
