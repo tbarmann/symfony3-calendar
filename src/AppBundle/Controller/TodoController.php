@@ -120,7 +120,7 @@ class TodoController extends Controller
     $todo->setCategory($todo->getCategory());
     $todo->setDescription($todo->getDescription());
     $todo->setPriority($todo->getPriority());
-    $todo->setDueDate($todo->getDueDate);
+    $todo->setDueDate($todo->getDueDate());
     $todo->setCreateDate($now);
 
     $style = 'margin-bottom:15px';
@@ -154,7 +154,7 @@ class TodoController extends Controller
           )
       ))
       ->add('save', SubmitType::class, array(
-        'label' => 'Create Todo',
+        'label' => 'Update Todo',
         'attr' => array(
           'class' => 'btn btn-primary','style' => $style
           )
@@ -162,72 +162,13 @@ class TodoController extends Controller
       ->getForm();   
 
       $form->handleRequest($request);
+      
       if ($form->isSubmitted() && $form->isValid()) {
         $name = $form['name']->getData();
         $category = $form['category']->getData();
         $description = $form['description']->getData();
         $priority = $form['priority']->getData();
         $due_date = $form['due_date']->getData();
-
-        $em = $this->getDoctrine()->getManager();
-
-        $em->persist($todo);
-        $em->flush();
-
-        $this->addFlash('notice','Todo updated');
-
-        return $this->redirectToRoute('todo_list');
-
-       }
-
-    $style = 'margin-bottom:15px';
-    $priorities = array('Low' => 'Low', 'Normal' => 'Normal', 'High' => 'High');
-    $todo = new Todo;
-
-    $form = $this->createFormBuilder($todo)
-      ->add('name', TextType::class, array(
-        'attr' => array(
-          'class' => 'form-control','style' => $style
-          )
-      ))   
-      ->add('category', TextType::class, array(
-        'attr' => array(
-          'class' => 'form-control','style' => $style
-        )
-      ))   
-      ->add('description', TextareaType::class, array(
-        'attr' => array(
-          'class' => 'form-control','style' => $style
-        )
-      ))   
-      ->add('priority', ChoiceType::class, array(
-        'choices' => $priorities,
-        'attr' => array(
-          'class' => 'form-control','style' => $style
-        )
-      ))   
-      ->add('due_date', DateTimeType::class, array(
-        'attr' => array(
-          'class' => '','style' => $style
-          )
-      ))
-      ->add('save', SubmitType::class, array(
-        'label' => 'Create Todo',
-        'attr' => array(
-          'class' => 'btn btn-primary','style' => $style
-          )
-      ))
-      ->getForm();   
-
-      $form->handleRequest($request);
-      if ($form->isSubmitted() && $form->isValid()) {
-        $name = $form['name']->getData();
-        $category = $form['category']->getData();
-        $description = $form['description']->getData();
-        $priority = $form['priority']->getData();
-        $due_date = $form['due_date']->getData();
-
-        $now = new\DateTime('now');
 
         $todo->setName($name);
         $todo->setCategory($category);
@@ -237,15 +178,20 @@ class TodoController extends Controller
         $todo->setCreateDate($now);
 
         $em = $this->getDoctrine()->getManager();
+        $todo = $em->getRepository('AppBundle:Todo')->find($id);
 
-        $em->persist($todo);
         $em->flush();
 
-        $this->addFlash('notice','Todo added');
+        $this->addFlash('notice','Todo updated');
 
+        return $this->redirectToRoute('todo_list');
+
+       }  
 
     return $this->render('todo/edit.html.twig', array(
-      'todo' => $todo));
+      'todo' => $todo,
+      'form' => $form->createView()
+    ));
   }
 
   /**
