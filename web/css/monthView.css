@@ -43,7 +43,15 @@
 }
 
 .event-item {
-	max-width: 90%;
 	font-size: 12px;
 	text-align: left;
+}
+
+.edit-icon img, .delete-icon img {
+	width: 15px;
+	height: 15px;
+}
+
+.edit-tools {
+	display:none;
 }
