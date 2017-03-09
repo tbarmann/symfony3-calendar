@@ -1,14 +1,14 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-  <a class="btn btn-primary" href="/">Back to Todos</a>
+  <a class="btn btn-primary" href="/">Back to Events</a>
   <hr>
-  <h2 class="page-header">{{todo.name}}</h2>
+  <h2 class="page-header">{{event.name}}</h2>
   <ul class="list-group">
-    <li class="list-group-item">Category: {{todo.category}}</li>
-    <li class="list-group-item">Priority: {{todo.priority}}</li>
-    <li class="list-group-item">Due: <strong>{{todo.dueDate|date('F j, Y, g:i a')}}</strong></li>
+    <li class="list-group-item">Category: {{event.category}}</li>
+    <li class="list-group-item">Priority: {{event.priority}}</li>
+    <li class="list-group-item">Due: <strong>{{event.dueDate|date('F j, Y, g:i a')}}</strong></li>
   </ul>
-  <p>{{todo.description}}</p>
+  <p>{{event.description}}</p>
 
 {% endblock %}

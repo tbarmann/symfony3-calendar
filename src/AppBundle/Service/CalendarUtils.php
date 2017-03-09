@@ -25,6 +25,20 @@ class CalendarUtils {
     return date("t", $d);
   }
 
+  function getNextMonthYear($m, $y) {
+    if ($m === 12) {
+      return array('month' => 1, 'year' => $y+1);
+    }
+    return array('month' => $m+1, 'year' => $y);
+  }
+
+  function getPrevMonthYear($m, $y) {
+    if ($m === 1) {
+      return array('month' => 12, 'year' => $y-1);
+    }
+    return array('month' => $m-1, 'year' => $y);
+  }
+
   function getCalendarMonthArray($m, $y) {
     $weeks = array();
     $d = strtotime("$y-$m-01");
@@ -63,11 +77,20 @@ class CalendarUtils {
     foreach ($events as $event) {
       $day = intval($event->getDueDate()->format("j"));
       $time = $event->getDueDate()->format("g:ia");
+      $time = str_replace("m","",$time);
       $name = $event->getName();
       $id = intval($event->getId());
       $formatted_events[$day][] = array('name' => $name, 'time'=> $time, 'id' => $id);
     }
     return $formatted_events;
+  }
+
+  function parseDateTime($dt) {
+    return array(
+      'monthNum' => intval($dt->format('m')),
+      'yearNum' =>  intval($dt->format('Y')),
+      'dayNum' => intval($dt->format('j')),
+      );
   }
 
 }

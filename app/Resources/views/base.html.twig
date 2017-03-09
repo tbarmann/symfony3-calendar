@@ -8,7 +8,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>{% block title %}{% endblock %}</title>
+    <title>{% block title %}Symfony 3 Calendar | Timothy Barmann{% endblock %}</title>
     <!-- Bootstrap core CSS -->
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
 
@@ -30,12 +30,13 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="#">Todo List</a>
+          <span class="navbar-brand">Symfony 3 Calendar</span>
         </div>
         <div id="navbar" class="collapse navbar-collapse">
           <ul class="nav navbar-nav">
-            <li><a href="/">Home</a></li>
-            <li><a href="/todo/create">Add</a></li>
+            <li><a href="/">List view</a></li>
+            <li><a href="/monthView">Month view</a></li>
+            <li><a href="/todo/create">Add Event</a></li>
           </ul>
         </div><!--/.nav-collapse -->
       </div>
@@ -44,6 +45,14 @@
     <div class="container">
       <div class="row">
         <div class="md-col-12">
+        {% for flash_message in app.session.flashbag.get('notice') %}
+          <div class="alert alert-success">{{flash_message}}</div>
+        {% endfor%}
+
+        {% for flash_message in app.session.flashbag.get('error') %}
+          <div class="alert alert-danger">{{flash_message}}</div>
+        {% endfor%}
+
           {% block body %}{% endblock %}
         </div>
       </div>
@@ -51,7 +60,18 @@
 
     </div><!-- /.container -->
 
-    {% block javascripts %}{% endblock %}
+    {% block javascripts %}
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+
+      <script type="text/javascript">
+        $('.event-item').on('mouseover',function() {
+          $(this).find('.edit-tools').show();
+        });
+        $('.event-item').on('mouseout',function() {
+          $('.edit-tools').hide();
+        });
+      </script>
+    {% endblock %}
   </body>
 </html>
 

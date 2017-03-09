@@ -1,26 +1,24 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-<h2 class="page-header">Latest Todos</h2>
+<h2 class="page-header">Events</h2>
 <table class="table table-striped">
   <thead>
     <tr>
-      <th>#</th>
-      <th>Todo</th>
-      <th>Due date</th>
+      <th>Event</th>
+      <th>Date</th>
       <th></th>
     </tr>
   </thead>
   <tbody>
-    {% for todo in todos %}
+    {% for event in events %}
     <tr>
-      <th scope="row">{{todo.id}}</th>
-      <td>{{todo.name}}</td>
-      <td>{{todo.dueDate|date('F j, Y, g:i a')}}</td>
+      <td>{{event.name}}</td>
+      <td>{{event.dueDate|date('F j, Y, g:i a')}}</td>
       <td>
-        <a href="/todo/details/{{todo.id}}" class="btn btn-success">View</a>
-        <a href="/todo/edit/{{todo.id}}" class="btn btn-primary">Edit</a>
-        <a href="/todo/delete/{{todo.id}}" class="btn btn-danger">Delete</a>
+        <a href="/todo/details/{{event.id}}" class="btn btn-success">View</a>
+        <a href="/todo/edit/{{event.id}}" class="btn btn-primary">Edit</a>
+        <a href="/todo/delete/{{event.id}}" class="btn btn-danger">Delete</a>
       </td>
     </tr>
     {% endfor %}

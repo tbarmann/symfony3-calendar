@@ -1,5 +1,5 @@
 {
-    "name": "tim/todolist",
+    "name": "tim/symfony-calendar",
     "license": "proprietary",
     "type": "project",
     "autoload": {

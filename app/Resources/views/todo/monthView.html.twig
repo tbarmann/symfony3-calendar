@@ -1,7 +1,11 @@
 {% extends 'base.html.twig' %}
 {% block body %}
 
-<h2 class="page-header">{{monthName}} {{year}}</h2>
+<h2 class="page-header">
+  <a href="/monthView/{{prevMonthYear.year}}/{{prevMonthYear.month}}" class="prev-month" title="Last month"> < </a>
+  {{monthName}} {{year}}
+  <a href="/monthView/{{nextMonthYear.year}}/{{nextMonthYear.month}}" class="next-month" title="Next month"> > </a>
+  </h2>
 
 	<table class="month-view">
     <tr>
@@ -23,8 +27,12 @@
                   {% if events[day] is defined %}
                     <ul class="events-list">
                       {% for event in events[day] %}
-                        <li class="event-item" title="{{event.time}} {{event.name}}">
-                          <a href="/details/{{event.id}}">{{event.time}} {{event.name}}</a>
+                        <li class="event-item">
+                          <a href="/todo/details/{{event.id}}">{{event.time}} {{event.name}}</a>
+                          <span class="edit-tools">
+                            <span class="edit-icon" title="Edit"><a href="/todo/edit/{{event.id}}"><img src="/images/edit.png"/></a></span>
+                            <span class="delete-icon" title="Delete"><a href="/todo/delete/{{event.id}}"><img src="/images/delete.png"/></a></span>
+                          </span>
                         </li>
                       {% endfor %}
                     </ul>

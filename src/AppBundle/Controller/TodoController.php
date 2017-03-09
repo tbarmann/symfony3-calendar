@@ -20,12 +20,12 @@ class TodoController extends Controller
    */
   public function listAction()
   {
-    $todos = $this->getDoctrine()
+    $events = $this->getDoctrine()
       ->getRepository('AppBundle:Todo')
-      ->findAll();
+      ->findBy([], ['dueDate' => 'ASC']);
 
     return $this->render('todo/index.html.twig', array(
-      'todos' => $todos));
+      'events' => $events));
   }
 
   /**
@@ -36,9 +36,11 @@ class TodoController extends Controller
     
     $style = 'margin-bottom:15px';
     $priorities = array('Low' => 'Low', 'Normal' => 'Normal', 'High' => 'High');
-    $todo = new Todo;
+    $event = new Todo;
 
-    $form = $this->createFormBuilder($todo)
+    $event->setDueDate(new \DateTime('now'));
+
+    $form = $this->createFormBuilder($event)
       ->add('name', TextType::class, array(
         'attr' => array(
           'class' => 'form-control','style' => $style
@@ -66,7 +68,7 @@ class TodoController extends Controller
           )
       ))
       ->add('save', SubmitType::class, array(
-        'label' => 'Create Todo',
+        'label' => 'Create event',
         'attr' => array(
           'class' => 'btn btn-primary','style' => $style
           )
@@ -83,21 +85,23 @@ class TodoController extends Controller
 
         $now = new\DateTime('now');
 
-        $todo->setName($name);
-        $todo->setCategory($category);
-        $todo->setDescription($description);
-        $todo->setPriority($priority);
-        $todo->setDueDate($due_date);
-        $todo->setCreateDate($now);
+        $event->setName($name);
+        $event->setCategory($category);
+        $event->setDescription($description);
+        $event->setPriority($priority);
+        $event->setDueDate($due_date);
+        $event->setCreateDate($now);
 
         $em = $this->getDoctrine()->getManager();
 
-        $em->persist($todo);
+        $em->persist($event);
         $em->flush();
 
-        $this->addFlash('notice','Todo added');
+        $this->addFlash('notice','Event added');
+        $dateParts = $this->get("CalendarUtils")->parseDateTime($event->getDueDate());
+        $routeParams = array('year' => $dateParts['yearNum'], 'month' => $dateParts['monthNum']);
 
-        return $this->redirectToRoute('todo_list');
+        return $this->redirectToRoute('todo_month_view', $routeParams);
 
        }
 
@@ -110,23 +114,23 @@ class TodoController extends Controller
    */
   public function editAction($id, Request $request)
   { 
-    $todo = $this->getDoctrine()
+    $event = $this->getDoctrine()
       ->getRepository('AppBundle:Todo')
       ->find($id);
 
     $now = new\DateTime('now');
 
-    $todo->setName($todo->getName());
-    $todo->setCategory($todo->getCategory());
-    $todo->setDescription($todo->getDescription());
-    $todo->setPriority($todo->getPriority());
-    $todo->setDueDate($todo->getDueDate());
-    $todo->setCreateDate($now);
+    $event->setName($event->getName());
+    $event->setCategory($event->getCategory());
+    $event->setDescription($event->getDescription());
+    $event->setPriority($event->getPriority());
+    $event->setDueDate($event->getDueDate());
+    $event->setCreateDate($now);
 
     $style = 'margin-bottom:15px';
     $priorities = array('Low' => 'Low', 'Normal' => 'Normal', 'High' => 'High');
 
-    $form = $this->createFormBuilder($todo)
+    $form = $this->createFormBuilder($event)
       ->add('name', TextType::class, array(
         'attr' => array(
           'class' => 'form-control','style' => $style
@@ -154,7 +158,7 @@ class TodoController extends Controller
           )
       ))
       ->add('save', SubmitType::class, array(
-        'label' => 'Update Todo',
+        'label' => 'Update event',
         'attr' => array(
           'class' => 'btn btn-primary','style' => $style
           )
@@ -170,50 +174,73 @@ class TodoController extends Controller
         $priority = $form['priority']->getData();
         $due_date = $form['due_date']->getData();
 
-        $todo->setName($name);
-        $todo->setCategory($category);
-        $todo->setDescription($description);
-        $todo->setPriority($priority);
-        $todo->setDueDate($due_date);
-        $todo->setCreateDate($now);
+        $event->setName($name);
+        $event->setCategory($category);
+        $event->setDescription($description);
+        $event->setPriority($priority);
+        $event->setDueDate($due_date);
+        $event->setCreateDate($now);
 
         $em = $this->getDoctrine()->getManager();
-        $todo = $em->getRepository('AppBundle:Todo')->find($id);
+        $event = $em->getRepository('AppBundle:Todo')->find($id);
 
         $em->flush();
 
-        $this->addFlash('notice','Todo updated');
+        $this->addFlash('notice','Event updated');
 
-        return $this->redirectToRoute('todo_list');
+        $dateParts = $this->get("CalendarUtils")->parseDateTime($event->getDueDate());
+        $routeParams = array('year' => $dateParts['yearNum'], 'month' => $dateParts['monthNum']);
+
+        return $this->redirectToRoute('todo_month_view', $routeParams);
 
        }  
 
     return $this->render('todo/edit.html.twig', array(
-      'todo' => $todo,
+      'event' => $event,
       'form' => $form->createView()
     ));
   }
 
   /**
-   * @Route("/details/{id}", name="todo_details")
+   * @Route("/todo/details/{id}", name="todo_details")
    */
   public function detailsAction($id)
   {
-    $todo = $this->getDoctrine()
+    $event = $this->getDoctrine()
       ->getRepository('AppBundle:Todo')
       ->find($id);
 
     return $this->render('todo/details.html.twig', array(
-      'todo' => $todo));
+      'event' => $event));
   }
 
+/**
+   * @Route("/todo/delete/{id}", name="todo_delete")
+   */
+  public function deleteAction($id)
+  {
+    $em = $this->getDoctrine()->getManager();
+    $event = $em->getRepository('AppBundle:Todo')->find($id);
+
+    $em->remove($event);
+    $em->flush();
+ 
+    $this->addFlash('notice','Event deleted');
+
+    return $this->redirectToRoute('todo_month_view');
+  }
+
+
+
   /**
-   * @Route("/monthView/{year}/{month}", name="todo_month_view")
+   * @Route("/monthView/{year}/{month}", name="todo_month_view", defaults={"year" = null, "month" = null}))
    */
  function monthAction($year, $month)
   {
-    $year = intval($year);
-    $month = intval($month);
+    
+    $now = new\DateTime('now');
+    $year = $year !== null ? intval($year) : intval($now->format('Y'));
+    $month = $month !== null ? intval($month) : intval($now->format('m'));
 
     $allEvents = $this->getDoctrine()
       ->getRepository('AppBundle:Todo')
@@ -222,15 +249,19 @@ class TodoController extends Controller
     $calendar = $this->get("CalendarUtils")->getCalendarMonthArray($month,$year);
     $monthName = $this->get("CalendarUtils")->getNameOfMonth($month);
     $daysOfWeek = $this->get("CalendarUtils")->getDaysOfWeekShort();
+    $nextMonthYear = $this->get("CalendarUtils")->getNextMonthYear($month,$year);
+    $prevMonthYear = $this->get("CalendarUtils")->getPrevMonthYear($month,$year);    
     $filteredEvents = $this->get("CalendarUtils")->filterThisMonthsEvents($allEvents, $month, $year);
-    $events = $this->get("CalendarUtils")->formatEvents($filteredEvents);
+    $formattedEvents = $this->get("CalendarUtils")->formatEvents($filteredEvents);
 
     return $this->render('todo/monthView.html.twig', array(
       'year' => $year,
       'month' => $month,
-      'events' => $events,
+      'events' => $formattedEvents,
       'daysOfWeek' => $daysOfWeek,
       'monthName' => $monthName,
+      'prevMonthYear' => $prevMonthYear,
+      'nextMonthYear' => $nextMonthYear,
       'calendar' => $calendar));
   }
 
